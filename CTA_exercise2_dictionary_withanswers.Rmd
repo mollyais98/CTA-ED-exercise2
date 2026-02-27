@@ -1,7 +1,7 @@
 ---
-title: "CTA-ED Exercise 2: dictionary-based methods"
+title: "CTA-ED Exercise 2: dictionary-based methods (with answers)"
 author: "Marion Lieutaud"
-date: "2/14/2024"
+date: "2/25/2026"
 output: html_document
 ---
 
@@ -235,8 +235,6 @@ tidy_tweets %>%
   geom_point(alpha=0.5) +
   geom_smooth(method= loess, alpha=0.25) +
   ylab("afinn sentiment")
-
-
 ```
 
 We see that they do look pretty similar... and interestingly it seems that overall sentiment positivity *increases* as the pandemic breaks.
@@ -310,7 +308,8 @@ With the `quanteda` package we first need to create a "corpus" object, by declar
 
 ```{r}
 tweets$date <- as.Date(tweets$created_at)
-tweet_corpus <- corpus(tweets, text_field = "tweet", docvars = "date")
+tweet_corpus <- corpus(tweets, text_field = "tweet" #,docvars = "date"
+                       )
 ```
 
 
@@ -377,6 +376,7 @@ tidy_sent %>%
 
 1. Take a subset of the tweets data by "user_name" These names describe the name of the newspaper source of the Twitter account. Do we see different sentiment dynamics if we look only at different newspaper sources?
 
+
 First the subsetting and some preprocessing
 ```{r ex 1 preprocessing}
 # to subset means to take only a sample according to a specific condition. Here I'm going to look only at tabloid media. 
@@ -433,7 +433,9 @@ dfm_tabloid_nrc <- dfm_tabloid_nrc %>%
   rename("newspaper" = doc_id) # rename the 'doc_id' column to 'newspaper'
 
 # let's have a look at the numbers by newspaper and by sentiment
-kable(dfm_tabloid_nrc)
+dfm_tabloid_nrc %>%
+  kable(booktabs = TRUE) %>% # the kable() command (from the kableextra package) turns the dataset into a nice-looking html table
+  kable_styling(c("striped", "condensed")) # this is just to make the table prettier and easier to read. You can skip this line if you want to keep it simple.
 ```
 
 Now we can calculate relative frequencies by sentiment and format for plotting. Using mutate() with across() allows you to modify multiple columns at once. 
@@ -465,6 +467,7 @@ dfm_tabloid_nrc_pct %>%
   guides(fill = "none") + # no need to show legend for colour 
   theme_minimal() # pretty graphic theme
 ```
+\newline
 Tabloids don't differ much on trust, surprise or anticipation; relative to the others,the Mirror and the Daily Mail use more words associated with anger, fear and sadness, while the Sun uses slightly more joyful words. Overall, the Mirror and the Daily Mail are more negative and use a variety of negative sentiments (fear, anger etc) more extensively than the other two. Metro seems less likely to invoke any sentiment-connotated word, as it shows lower frequency in almost all sentiment categories. This may be a sign that the writing in Metro is somewhat less sensationalist.
 
 
@@ -494,6 +497,7 @@ tidy_tweets %>%
   coord_flip() +
   theme_minimal()
 ```
+\newline
 The Sun looks like it discusses trans people and trans rights (or transphobia) particularly often.
 
 
@@ -530,10 +534,11 @@ tidy_dfm_news_lsd %>%
   ylab("Overall tweet sentiment (negative to positive)") + # label y axis
   theme_minimal() # pretty graphic theme
 ```
+\newline
 Difficult to interpret... Tabloids (The Daily Mirror, the Sun and the Daily Mail) seems to write overall more negative tweets than more traditional newspapers. This is especially true for The Daily Mirror. Overall it may be interesting to note that the more left-leaning papers (the Daily Mirror and the Guardian) also appear the most negative within their respective genre (tabloids and non-tabloid newspapers).
 
-
-Because many of you wanted to analyse sentiment not just by newspaper but by newspaper _and_ date, I include code to do this.
+## Extra code
+Because some of you may be interested in analysing sentiment not just by newspaper but by newspaper _and_ date, I include code to do this.
 ```{r}
 # recreate a document-feature matrix but instead of grouping it just by date or just by newspaper, we group it by both (we interact the two)
 dfm_news_lsd <- dfm(toks_news_lsd) %>% 
@@ -571,7 +576,7 @@ tidy_dfm_news_lsd %>%
   theme_minimal()
 ```
 
-The Mirror is clealry all more negative overall, but also more dispersed whereas the Times, the Telegraph, the Guardian and Metro all show compact and stable sentiment over time. 
+The Mirror is clearly way more negative overall, but also more dispersed whereas the Times, the Telegraph, the Guardian and Metro all show compact and stable sentiment over time. 
 The increase in positive words use that we saw in the overall analysis seems to have been driven chiefly by the Mirror and the Sun.
 
 4. Don't forget to 'knit' to produce your final html output for the exercise.
